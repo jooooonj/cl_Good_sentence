@@ -1,9 +1,13 @@
 package org.example.service;
 
 import org.example.entity.GoodSentence;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import java.io.*;
 import java.util.ArrayList;
-import java.util.*;
+import java.util.List;
+import java.util.StringTokenizer;
 
 public class AppService {
 
@@ -12,6 +16,8 @@ public class AppService {
     static final String filePath = "C:/Users/joung/Documents/멋사/textFile.txt";
     private BufferedWriter bw = null;
     private BufferedReader br = null;
+    private JSONObject obj = null;
+
 
     //curd
     public int insert(String content, String writer) {
@@ -19,11 +25,12 @@ public class AppService {
         list.add(goodSentence);
 
         n++;
-        write();
-        return n-1;
+        save();
+        writeJson();
+        return n - 1;
     }
 
-    public int update(int num, String content, String writer){
+    public int update(int num, String content, String writer) {
         GoodSentence curr = null;
         for (GoodSentence goodSentence : list) {
             if (goodSentence.getNum() == num) {
@@ -36,7 +43,8 @@ public class AppService {
         }
         curr.setWriter(writer);
         curr.setSentence(content);
-        write();
+        save();
+        writeJson();
         return 1;
     }
 
@@ -47,18 +55,19 @@ public class AppService {
                 return 1;
             }
         }
-        write();
+        save();
+        writeJson();
         return -1;
     }
 
-    public void findAll(){
+    public void findAll() {
         StringTokenizer st;
         try {
             br = new BufferedReader(new FileReader(filePath));
 
-            while(true){
+            while (true) {
                 String str = br.readLine();
-                if(str==null)
+                if (str == null)
                     break;
                 st = new StringTokenizer(str);
                 System.out.println(st.nextToken() + " / " + st.nextToken() + " / " + st.nextToken());
@@ -79,17 +88,40 @@ public class AppService {
         return null;
     }
 
-    private void write() {
+    private void save() {
         try {
             bw = new BufferedWriter(new FileWriter(filePath, false));
-            for(GoodSentence gs : list){
-                bw.write(gs.getNum()+" "+ gs.getWriter() +" "+ gs.getSentence());
+            for (GoodSentence gs : list) {
+                bw.write(gs.getNum() + " " + gs.getWriter() + " " + gs.getSentence());
                 bw.newLine();
             }
             bw.close();
         } catch (IOException e) {
             e.getStackTrace();
         }
+    }
+
+    private void writeJson() {
+        JSONObject obj;
+        JSONArray jsonArray = new JSONArray();
+        for (GoodSentence gs : list) {
+            obj = new JSONObject();
+            obj.put("id", gs.getNum());
+            obj.put("content", gs.getSentence());
+            obj.put("author", gs.getWriter());
+            jsonArray.add(obj);
+        }
+        try {
+            FileWriter file = new FileWriter("src/jsonfile.json", false);
+            jsonArray.writeJSONString(file);
+
+            file.flush();
+            file.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
     }
 }
 
