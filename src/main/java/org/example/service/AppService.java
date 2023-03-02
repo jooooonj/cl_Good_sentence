@@ -120,8 +120,6 @@ public class AppService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
     }
 }
 
