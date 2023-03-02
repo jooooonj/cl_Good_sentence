@@ -1,15 +1,25 @@
 package org.example;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.StringTokenizer;
 
 public class App {
+
     List<GoodSentence> list = new ArrayList<>();
-    int num = 1;
-
+    int num = 0;
+    final String filePath = "C:/Users/joung/Documents/멋사/textFile.txt";
+    BufferedWriter bw = null;
+    BufferedReader br = null;
     public void run() {
-
+        try {
+            saveList();
+        } catch (IOException e) {
+            e.getStackTrace();
+        }
+        num = list.size()+1;
         Scanner sc = new Scanner(System.in);
         System.out.println("==명언 앱==");
         while (true) {
@@ -24,6 +34,8 @@ public class App {
                 String writer = sc.nextLine();
                 list.add(new GoodSentence(num, sentence, writer));
                 System.out.println(num + "번 명언이 등록되었습니다.");
+
+                write(num, sentence, writer);
                 num++;
             } else if (cmd.equals("목록")) {
                 System.out.println("번호 / 작가 / 명언");
@@ -69,5 +81,40 @@ public class App {
             }
         }
         sc.close();
+    }
+
+    private void write(int num, String sentence, String writer) {
+        try {
+            bw = new BufferedWriter(new FileWriter(filePath, true));
+            bw.write(num+" "+ writer +" "+ sentence);
+            bw.newLine();
+            bw.close();
+        } catch (IOException e) {
+            e.getStackTrace();
+        }
+    }
+
+    private void saveList() throws IOException {
+        StringTokenizer st;
+        String read;
+        try {
+            br = new BufferedReader(new FileReader(filePath));
+            while(true){
+                read = br.readLine();
+                if(read==null)
+                    break;
+                st = new StringTokenizer(read);
+                list.add(new GoodSentence(Integer.parseInt(st.nextToken()), st.nextToken(), st.nextToken()));
+            }
+
+        } catch (FileNotFoundException e) {
+            e.getStackTrace();
+        } catch (Exception e) {
+            e.getStackTrace();
+        } finally{
+            if (br != null) {
+                br.close();
+            }
+        }
     }
 }
