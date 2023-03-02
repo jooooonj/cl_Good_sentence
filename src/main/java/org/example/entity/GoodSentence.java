@@ -1,6 +1,6 @@
-package org.example;
+package org.example.entity;
 
-class GoodSentence {
+public class GoodSentence {
     private String sentence;
     private String writer;
     private int num;
